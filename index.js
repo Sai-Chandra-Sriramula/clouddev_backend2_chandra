@@ -8,21 +8,36 @@ app.use(express.json());
 
 // MySQL connection config
 // triggering azure deployment
+const mysql = require('mysql');
+
 const db = mysql.createConnection({
-  host: 'studentdb-demo.mysql.database.azure.com',
-  user: 'mysql_admin',
-  password: 'TempPass@123',
-  database: 'studentdb',
-  port: 3306,
+  host: 'mysql-chandra.mysql.database.azure.com',
+  user: 'saichandra1022@mysql-chandra', // ✅ use full username format
+  password: 'Ts07hs@3822',       // 🔒 your actual password
+  database: 'studentdb',                // make sure this DB exists
   ssl: {
-    rejectUnauthorized:true
+    rejectUnauthorized: true
   }
 });
 
-db.connect(err => {
-  if (err) throw err;
-  console.log('Connected to MySQL database');
+
+db.connect((err) => {
+  if (err) {
+    console.error('❌ Database connection failed:', err.stack);
+    return;
+  }
+  console.log('✅ Connected to Azure MySQL Database!');
+
+  // Create database if it doesn't exist
+  db.query('CREATE DATABASE IF NOT EXISTS studentdb', (err, result) => {
+    if (err) {
+      console.error("❌ Couldn't create DB:", err);
+    } else {
+      console.log("✅ Database 'studentdb' ensured.");
+    }
+  });
 });
+
 
 app.get('/api/students', (req, res) => {
   db.query('SELECT * FROM students', (err, results) => {
